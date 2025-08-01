@@ -3,6 +3,13 @@ import Link from "next/link";
 import SaveButton from "./SaveButton";
 import type { Story } from "../types/models";
 
+type StoryCardProps = {
+  story: Story;
+  showActions?: boolean;
+  onApprove?: (id: number) => void;
+  onReject?: (id: number) => void;
+};
+
 // Helper to format snake_case or lowercase into Capitalized Words
 function formatLabel(label: string): string {
   return label
@@ -11,7 +18,12 @@ function formatLabel(label: string): string {
     .join(" ");
 }
 
-export default function StoryCard({ story }: { story: Story }) {
+export default function StoryCard({
+  story,
+  showActions = false,
+  onApprove,
+  onReject,
+}: StoryCardProps) {
   return (
     <li className="rounded-2xl border border-yellow-300 bg-white shadow-sm hover:shadow-lg transition overflow-hidden">
       <Link href={`/story/${story.slug || story.id}`} className="block">
@@ -54,9 +66,27 @@ export default function StoryCard({ story }: { story: Story }) {
         </div>
       </Link>
 
-      {/* Save Button */}
-      <div className="px-4 pb-4">
-        <SaveButton storyId={String(story.id)} />
+      <div className="px-4 pb-4 space-y-2">
+        {/* Save Button */}
+        {!showActions && <SaveButton storyId={String(story.id)} />}
+
+        {/* Admin Actions */}
+        {showActions && (
+          <div className="flex justify-between items-center space-x-2">
+            <button
+              onClick={() => onApprove?.(story.id)}
+              className="bg-green-600 hover:bg-green-700 text-white text-sm px-3 py-1 rounded"
+            >
+              Approve
+            </button>
+            <button
+              onClick={() => onReject?.(story.id)}
+              className="bg-red-600 hover:bg-red-700 text-white text-sm px-3 py-1 rounded"
+            >
+              Reject
+            </button>
+          </div>
+        )}
       </div>
     </li>
   );
