@@ -19,24 +19,24 @@ model Story {
   coverImage String?
   approved   Boolean  @default(false)
   createdAt  DateTime @default(now())
+
+  // Relations
   authorId   Int?
-  author     User?    @relation(fields: [authorId], references: [id])
-  tags       Tag[]    @relation("StoryTags")
+  author     User?    @relation(fields: [authorId], references: [id], name: "AuthorStories")
+  tags       Tag[]    @relation("StoryTags") // ✅ FIXED: removed references
 }
-
-
 
 model Tag {
   id      Int      @id @default(autoincrement())
   name    String   @unique
 
-  stories Story[]
+  stories Story[]  @relation("StoryTags")
 }
 
 model User {
-  id            Int      @id @default(autoincrement())
-  name          String
-  email         String   @unique
+  id      Int      @id @default(autoincrement())
+  name    String
+  email   String   @unique
 
-  contributions Story[]  @relation("UserContributions")
+  stories Story[]  @relation("AuthorStories")
 }
