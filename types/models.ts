@@ -20,3 +20,11 @@ export interface Story {
     name: string;
   }[];
 }
+// types/models.ts
+
+export interface Author {
+  id: number;
+  name: string;
+  email?: string | null;
+  contributions: Story[];
+}

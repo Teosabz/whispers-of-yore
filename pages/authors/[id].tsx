@@ -1,8 +1,11 @@
+// pages/authors/[id].tsx
+
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import StoryCard from "../../components/StoryCard";
 import type { Author, Story } from "../../types/models";
+import { ArrowLeft } from "lucide-react";
 
 export default function AuthorProfile() {
   const router = useRouter();
@@ -27,6 +30,14 @@ export default function AuthorProfile() {
     <>
       <Header />
       <main className="max-w-4xl mx-auto px-4 py-8 space-y-8">
+        <button
+          onClick={() => router.back()}
+          className="inline-flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-black dark:text-gray-300 dark:hover:text-white transition"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back
+        </button>
+
         {loading ? (
           <p className="text-gray-600">Loading contributor profile...</p>
         ) : author ? (
