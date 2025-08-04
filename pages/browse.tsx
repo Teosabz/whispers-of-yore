@@ -97,15 +97,15 @@ export default function BrowsePage() {
 
   return (
     <>
-      <div className="max-w-5xl mx-auto p-6 bg-yellow-50 min-h-screen">
+      <div className="max-w-6xl mx-auto px-4 py-6 min-h-screen bg-yellow-50">
         <button
           onClick={() => window.history.back()}
-          className="mb-4 px-4 py-2 bg-yellow-300 text-yellow-900 rounded hover:bg-yellow-400 transition"
+          className="mb-6 px-4 py-2 bg-yellow-300 text-yellow-900 rounded hover:bg-yellow-400 transition"
         >
-          ← Back
+          ← Back to Home
         </button>
 
-        <h1 className="text-3xl font-bold mb-6 text-center text-yellow-900">
+        <h1 className="text-3xl font-bold mb-8 text-center text-yellow-900">
           Browse Stories
         </h1>
 
@@ -113,12 +113,12 @@ export default function BrowsePage() {
           <p className="text-yellow-700 text-center">No stories found.</p>
         )}
 
-        <div className="story-grid">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {stories.map((story) => (
             <Link
               key={story.id}
               href={`/story/${story.slug}`}
-              className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 cursor-pointer block border border-yellow-300"
+              className="bg-white border border-yellow-300 rounded-xl shadow hover:shadow-lg transition duration-300 flex flex-col overflow-hidden"
             >
               {story.cover_image && (
                 <Image
@@ -130,25 +130,27 @@ export default function BrowsePage() {
                   unoptimized
                 />
               )}
-              <div className="p-4">
-                <h2 className="text-xl font-semibold mb-2 text-yellow-900">
-                  {story.title}
-                </h2>
-                <p className="text-sm text-yellow-700 mb-1">
-                  <strong>Region:</strong> {story.region}
-                </p>
-                <p className="text-sm text-yellow-700 mb-2">
-                  <strong>Category:</strong> {story.category}
-                </p>
-                <div className="text-sm text-yellow-800">
-                  {story.tags.map((tag) => (
-                    <span
-                      key={tag.name}
-                      className="mr-2 bg-yellow-200 px-2 py-1 rounded-full text-yellow-900"
-                    >
-                      #{tag.name}
-                    </span>
-                  ))}
+              <div className="p-4 flex flex-col justify-between flex-grow">
+                <div>
+                  <h2 className="text-xl font-semibold text-yellow-900 mb-2">
+                    {story.title}
+                  </h2>
+                  <p className="text-sm text-yellow-800 mb-1">
+                    <strong>Region:</strong> {story.region}
+                  </p>
+                  <p className="text-sm text-yellow-800 mb-2">
+                    <strong>Category:</strong> {story.category}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {story.tags.map((tag) => (
+                      <span
+                        key={tag.name}
+                        className="bg-yellow-200 text-yellow-900 text-xs px-2 py-1 rounded-full"
+                      >
+                        #{tag.name}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
             </Link>
@@ -162,7 +164,7 @@ export default function BrowsePage() {
         {!loading && hasMore && (
           <button
             onClick={handleLoadMore}
-            className="mt-6 px-6 py-2 bg-yellow-600 text-yellow-100 rounded-full hover:bg-yellow-700 block mx-auto transition"
+            className="mt-8 px-6 py-2 bg-yellow-600 text-yellow-100 rounded-full hover:bg-yellow-700 block mx-auto transition"
           >
             Load More
           </button>
@@ -174,35 +176,6 @@ export default function BrowsePage() {
           </p>
         )}
       </div>
-
-      <style jsx>{`
-        .story-grid {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 1.5rem;
-        }
-
-        @media (min-width: 640px) {
-          /* sm */
-          .story-grid {
-            grid-template-columns: 1fr;
-          }
-        }
-
-        @media (min-width: 768px) {
-          /* md */
-          .story-grid {
-            grid-template-columns: repeat(2, 1fr);
-          }
-        }
-
-        @media (min-width: 1024px) {
-          /* lg */
-          .story-grid {
-            grid-template-columns: repeat(3, 1fr);
-          }
-        }
-      `}</style>
     </>
   );
 }

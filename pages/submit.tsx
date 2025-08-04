@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Link from "next/link";
 import Header from "../components/Header";
 
 export default function SubmitPage() {
@@ -52,7 +53,18 @@ export default function SubmitPage() {
   return (
     <>
       <Header />
+
       <main className="max-w-2xl mx-auto px-4 py-8 bg-yellow-50 min-h-screen text-yellow-900">
+        <div className="flex justify-start mb-6">
+          {/* ✅ Styled Back Button */}
+          <Link
+            href="/"
+            className="px-4 py-2 rounded bg-yellow-600 text-yellow-100 hover:bg-yellow-700 transition"
+          >
+            ← Back to Home
+          </Link>
+        </div>
+
         <h1 className="text-2xl font-bold mb-6 text-yellow-800">
           📘 Contribute a Story
         </h1>
@@ -168,7 +180,7 @@ export default function SubmitPage() {
           <button
             type="submit"
             disabled={status === "submitting"}
-            className="bg-yellow-600 hover:bg-yellow-700 text-yellow-100 px-4 py-2 rounded transition"
+            className="px-6 py-2 rounded bg-yellow-700 text-yellow-100 hover:bg-yellow-800 transition disabled:opacity-50"
           >
             {status === "submitting" ? "Submitting..." : "📤 Submit Story"}
           </button>
@@ -185,27 +197,6 @@ export default function SubmitPage() {
           )}
         </form>
       </main>
-
-      <style jsx>{`
-        @media (max-width: 639px) {
-          main {
-            padding-left: 1rem;
-            padding-right: 1rem;
-          }
-        }
-        @media (min-width: 640px) and (max-width: 767px) {
-          main {
-            padding-left: 1.5rem;
-            padding-right: 1.5rem;
-          }
-        }
-        @media (min-width: 768px) {
-          main {
-            padding-left: 2rem;
-            padding-right: 2rem;
-          }
-        }
-      `}</style>
     </>
   );
 }
