@@ -1,9 +1,14 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../lib/prisma";
 
+type TagFrequency = {
+  name: string;
+  count: number;
+};
+
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse<TagFrequency[] | { error: string }>
 ) {
   if (req.method !== "GET") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -18,7 +23,7 @@ export default async function handler(
       },
     });
 
-    const result = tagsWithCounts.map((tag) => ({
+    const result: TagFrequency[] = tagsWithCounts.map((tag) => ({
       name: tag.name,
       count: tag.stories.length,
     }));
