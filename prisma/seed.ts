@@ -70,40 +70,30 @@ async function main() {
     console.log(`Downloading & uploading image for: ${story.title}`);
 
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const coverImageUrl = await downloadAndUploadImage(randomUrl, filename);
 
-      await prisma.story.upsert({
-        where: { title: story.title }, // title must be unique in your Prisma schema
-        update: {
-          text: story.text,
-          region: story.region,
-          category: story.category,
-          language: story.language,
+      await prisma.story.create({
+        data: {
+          slug: "some-unique-slug", // must provide this
+          title: "My Story Title",
+          text: "Story text...",
+          region: "Africa",
+          category: "Folk",
+          language: "English",
           approved: true,
-          coverImage: coverImageUrl,
-        },
-        create: {
-          title: story.title,
-          text: story.text,
-          region: story.region,
-          category: story.category,
-          language: story.language,
-          approved: true,
-          coverImage: coverImageUrl,
+          coverImage: "url-or-null",
           author: {
             connectOrCreate: {
-              where: { email: story.author.email },
-              create: {
-                name: story.author.name,
-                email: story.author.email,
-              },
+              where: { email: "author@example.com" },
+              create: { name: "Author Name", email: "author@example.com" },
             },
           },
           tags: {
-            connectOrCreate: story.tags.map((tag) => ({
-              where: { name: tag },
-              create: { name: tag },
-            })),
+            connectOrCreate: [
+              { where: { name: "tag1" }, create: { name: "tag1" } },
+              { where: { name: "tag2" }, create: { name: "tag2" } },
+            ],
           },
         },
       });

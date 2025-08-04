@@ -10,7 +10,8 @@ export default async function handler(
   if (req.method === "GET") {
     try {
       const users = await prisma.user.findMany({
-        orderBy: { createdAt: "desc" },
+        // Remove orderBy or comment it out since createdAt doesn't exist
+        // orderBy: { createdAt: "desc" },
       });
       return res.status(200).json({ success: true, data: users });
     } catch (err) {
