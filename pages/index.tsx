@@ -68,9 +68,10 @@ export default function HomePage() {
             slug,
             cover_image,
             author:users(name),
-            story_tag (
-              tags(name)
-            )
+            story_tags (
+  tags(name)
+)
+
           `
           )
           .eq("approved", true);

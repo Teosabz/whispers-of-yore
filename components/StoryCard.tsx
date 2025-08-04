@@ -35,6 +35,7 @@ export default function StoryCard({
             fill
             className="rounded-t-2xl object-cover"
             priority
+            unoptimized // remove if using external loader config
           />
         </div>
 
