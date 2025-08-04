@@ -10,8 +10,11 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // Fetch pending stories from Supabase
   const loadStories = async () => {
     setLoading(true);
+    setError("");
+
     const { data, error } = await supabase
       .from("stories")
       .select("*")
@@ -20,6 +23,7 @@ export default function AdminPanel() {
     if (error) {
       console.error("Failed to load stories:", error);
       setError("Failed to load stories.");
+      setPendingStories([]);
     } else {
       setPendingStories(data || []);
     }
@@ -27,6 +31,7 @@ export default function AdminPanel() {
     setLoading(false);
   };
 
+  // Approve story by updating status to "approved"
   const approveStory = async (id: number) => {
     const { error } = await supabase
       .from("stories")
@@ -35,16 +40,19 @@ export default function AdminPanel() {
 
     if (error) {
       console.error("Approval failed:", error);
+      alert("Failed to approve story.");
     } else {
       loadStories();
     }
   };
 
+  // Reject story by deleting it
   const rejectStory = async (id: number) => {
     const { error } = await supabase.from("stories").delete().eq("id", id);
 
     if (error) {
       console.error("Rejection failed:", error);
+      alert("Failed to reject story.");
     } else {
       loadStories();
     }
@@ -84,13 +92,14 @@ export default function AdminPanel() {
                   </p>
                   <div className="text-xs text-yellow-700 space-y-1">
                     <p>
-                      <strong>Region:</strong> {story.region}
+                      <strong>Region:</strong> {story.region || "Unknown"}
                     </p>
                     <p>
-                      <strong>Category:</strong> {story.category}
+                      <strong>Category:</strong>{" "}
+                      {story.category || "Uncategorized"}
                     </p>
                     <p>
-                      <strong>Language:</strong> {story.language}
+                      <strong>Language:</strong> {story.language || "Unknown"}
                     </p>
                   </div>
                 </div>
