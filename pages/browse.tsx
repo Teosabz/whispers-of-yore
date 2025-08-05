@@ -36,7 +36,7 @@ export default function BrowsePage() {
         category,
         cover_image,
         created_at,
-        story_tag (
+        story_tags (
           tags (
             name
           )
@@ -69,7 +69,7 @@ export default function BrowsePage() {
       cover_image: story.cover_image,
       created_at: story.created_at,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      tags: (story.story_tag ?? []).map((st: any) => st.tags),
+      tags: (story.story_tags ?? []).map((st: any) => st.tags),
     }));
 
     if (offset === 0) {
@@ -96,86 +96,84 @@ export default function BrowsePage() {
   };
 
   return (
-    <>
-      <div className="max-w-6xl mx-auto px-4 py-6 min-h-screen bg-yellow-50">
-        <button
-          onClick={() => window.history.back()}
-          className="mb-6 px-4 py-2 bg-yellow-300 text-yellow-900 rounded hover:bg-yellow-400 transition"
-        >
-          ← Back to Home
-        </button>
+    <div className="max-w-6xl mx-auto px-4 py-6 min-h-screen bg-yellow-50">
+      <button
+        onClick={() => window.history.back()}
+        className="mb-6 px-4 py-2 bg-yellow-300 text-yellow-900 rounded hover:bg-yellow-400 transition"
+      >
+        ← Back to Home
+      </button>
 
-        <h1 className="text-3xl font-bold mb-8 text-center text-yellow-900">
-          Browse Stories
-        </h1>
+      <h1 className="text-3xl font-bold mb-8 text-center text-yellow-900">
+        Browse Stories
+      </h1>
 
-        {stories.length === 0 && !loading && (
-          <p className="text-yellow-700 text-center">No stories found.</p>
-        )}
+      {stories.length === 0 && !loading && (
+        <p className="text-yellow-700 text-center">No stories found.</p>
+      )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {stories.map((story) => (
-            <Link
-              key={story.id}
-              href={`/story/${story.slug}`}
-              className="bg-white border border-yellow-300 rounded-xl shadow hover:shadow-lg transition duration-300 flex flex-col overflow-hidden"
-            >
-              {story.cover_image && (
-                <Image
-                  src={story.cover_image}
-                  alt={story.title}
-                  width={800}
-                  height={450}
-                  className="w-full h-48 object-cover"
-                  unoptimized
-                />
-              )}
-              <div className="p-4 flex flex-col justify-between flex-grow">
-                <div>
-                  <h2 className="text-xl font-semibold text-yellow-900 mb-2">
-                    {story.title}
-                  </h2>
-                  <p className="text-sm text-yellow-800 mb-1">
-                    <strong>Region:</strong> {story.region}
-                  </p>
-                  <p className="text-sm text-yellow-800 mb-2">
-                    <strong>Category:</strong> {story.category}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {story.tags.map((tag) => (
-                      <span
-                        key={tag.name}
-                        className="bg-yellow-200 text-yellow-900 text-xs px-2 py-1 rounded-full"
-                      >
-                        #{tag.name}
-                      </span>
-                    ))}
-                  </div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+        {stories.map((story) => (
+          <Link
+            key={story.id}
+            href={`/story/${story.slug}`}
+            className="bg-white border border-yellow-300 rounded-xl shadow hover:shadow-lg transition duration-300 flex flex-col overflow-hidden"
+          >
+            {story.cover_image && (
+              <Image
+                src={story.cover_image}
+                alt={story.title}
+                width={800}
+                height={450}
+                className="w-full h-48 object-cover"
+                unoptimized
+              />
+            )}
+            <div className="p-4 flex flex-col justify-between flex-grow">
+              <div>
+                <h2 className="text-xl font-semibold text-yellow-900 mb-2">
+                  {story.title}
+                </h2>
+                <p className="text-sm text-yellow-800 mb-1">
+                  <strong>Region:</strong> {story.region}
+                </p>
+                <p className="text-sm text-yellow-800 mb-2">
+                  <strong>Category:</strong> {story.category}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {story.tags.map((tag) => (
+                    <span
+                      key={tag.name}
+                      className="bg-yellow-200 text-yellow-900 text-xs px-2 py-1 rounded-full"
+                    >
+                      #{tag.name}
+                    </span>
+                  ))}
                 </div>
               </div>
-            </Link>
-          ))}
-        </div>
-
-        {loading && (
-          <p className="text-yellow-700 text-center mt-4">Loading...</p>
-        )}
-
-        {!loading && hasMore && (
-          <button
-            onClick={handleLoadMore}
-            className="mt-8 px-6 py-2 bg-yellow-600 text-yellow-100 rounded-full hover:bg-yellow-700 block mx-auto transition"
-          >
-            Load More
-          </button>
-        )}
-
-        {!hasMore && (
-          <p className="text-yellow-700 text-center mt-4">
-            No more stories to load.
-          </p>
-        )}
+            </div>
+          </Link>
+        ))}
       </div>
-    </>
+
+      {loading && (
+        <p className="text-yellow-700 text-center mt-4">Loading...</p>
+      )}
+
+      {!loading && hasMore && (
+        <button
+          onClick={handleLoadMore}
+          className="mt-8 px-6 py-2 bg-yellow-600 text-yellow-100 rounded-full hover:bg-yellow-700 block mx-auto transition"
+        >
+          Load More
+        </button>
+      )}
+
+      {!hasMore && (
+        <p className="text-yellow-700 text-center mt-4">
+          No more stories to load.
+        </p>
+      )}
+    </div>
   );
 }
