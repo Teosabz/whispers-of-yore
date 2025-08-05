@@ -69,9 +69,8 @@ export default function HomePage() {
             cover_image,
             author:users(name),
             story_tags (
-  tags(name)
-)
-
+              tags(name)
+            )
           `
           )
           .eq("approved", true);
@@ -254,7 +253,7 @@ export default function HomePage() {
               No stories match your selection.
             </p>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
               {displayed.map((story) => (
                 <Link
                   key={story.id}
