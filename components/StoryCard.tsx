@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { supabase } from "@/lib/supabaseClient";
+import { useState, useEffect } from "react";
 
 export type Story = {
   id: number;
@@ -33,6 +36,29 @@ export default function StoryCard({
   const fallbackImage = `/images/fallback/pics (${fallbackIndex}).jpeg`;
   const imageSrc = story.cover_image || fallbackImage;
 
+  // Text-to-speech state
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [selectedVoice, setSelectedVoice] =
+    useState<SpeechSynthesisVoice | null>(null);
+  const [speaking, setSpeaking] = useState(false);
+
+  // Load available voices
+  useEffect(() => {
+    const loadVoices = () => {
+      const synthVoices = window.speechSynthesis.getVoices();
+      setVoices(synthVoices);
+    };
+    loadVoices();
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+  }, []);
+
+  // Set default voice once voices are loaded
+  useEffect(() => {
+    if (!selectedVoice && voices.length > 0) {
+      setSelectedVoice(voices[0]);
+    }
+  }, [voices, selectedVoice]);
+
   const handleFavClick = async () => {
     const {
       data: { user },
@@ -42,6 +68,25 @@ export default function StoryCard({
       return;
     }
     toggleFav(story.id);
+  };
+
+  const handleSpeak = () => {
+    if (!story.text || !selectedVoice) return;
+
+    const utterance = new SpeechSynthesisUtterance(story.text);
+    utterance.voice = selectedVoice;
+    utterance.rate = 1;
+    utterance.pitch = 1;
+
+    utterance.onstart = () => setSpeaking(true);
+    utterance.onend = () => setSpeaking(false);
+
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const stopSpeaking = () => {
+    window.speechSynthesis.cancel();
+    setSpeaking(false);
   };
 
   return (
@@ -78,7 +123,7 @@ export default function StoryCard({
           )}
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <button
             onClick={handleFavClick}
             className={`px-3 py-1 rounded ${
@@ -94,6 +139,22 @@ export default function StoryCard({
           >
             Read
           </Link>
+
+          {speaking ? (
+            <button
+              onClick={stopSpeaking}
+              className="px-3 py-1 rounded bg-yellow-500 text-white hover:bg-yellow-600 transition"
+            >
+              Stop Reading
+            </button>
+          ) : (
+            <button
+              onClick={handleSpeak}
+              className="px-3 py-1 rounded bg-green-600 text-white hover:bg-green-700 transition"
+            >
+              Listen
+            </button>
+          )}
         </div>
       </div>
     </div>
