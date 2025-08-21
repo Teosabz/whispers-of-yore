@@ -1,11 +1,10 @@
-// components/Navbar.tsx
 "use client";
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { HiMenu, HiX } from "react-icons/hi";
 import { HiOutlineHeart, HiHeart } from "react-icons/hi2";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 
 interface NavbarProps {
@@ -23,20 +22,9 @@ export default function Navbar({ currentStoryId }: NavbarProps) {
   useEffect(() => {
     const getSession = async () => {
       const { data } = await supabase.auth.getSession();
-      setUserId(data.session?.user.id || null);
+      if (data.session) setUserId(data.session.user.id);
     };
     getSession();
-
-    // Listen for auth changes (login/logout)
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setUserId(session?.user.id || null);
-      }
-    );
-
-    return () => {
-      listener.subscription.unsubscribe();
-    };
   }, []);
 
   // Check if current story is favorited
@@ -50,7 +38,6 @@ export default function Navbar({ currentStoryId }: NavbarProps) {
         .eq("user_id", userId)
         .eq("story_id", currentStoryId)
         .single();
-
       setIsFavorited(!!data);
     };
 
@@ -59,7 +46,7 @@ export default function Navbar({ currentStoryId }: NavbarProps) {
 
   const toggleFavorite = async () => {
     if (!userId || !currentStoryId) {
-      alert("You must be logged in to favorite stories.");
+      router.push("/login");
       return;
     }
 
@@ -72,34 +59,14 @@ export default function Navbar({ currentStoryId }: NavbarProps) {
           .eq("story_id", currentStoryId);
         setIsFavorited(false);
       } else {
-        await supabase
-          .from("favorites")
-          .insert({ user_id: userId, story_id: currentStoryId });
+        await supabase.from("favorites").insert({
+          user_id: userId,
+          story_id: currentStoryId,
+        });
         setIsFavorited(true);
       }
     } catch (err) {
       console.error("Error toggling favorite:", err);
-    }
-  };
-
-  const logout = async () => {
-    await supabase.auth.signOut();
-    router.push("/login");
-  };
-
-  const goToRandomStory = async () => {
-    setLoadingRandom(true);
-    try {
-      const { data, error } = await supabase.rpc("get_random_story");
-      if (error) throw error;
-      if (!data) return;
-
-      const story = Array.isArray(data) ? data[0] : data;
-      if (story?.id) router.push(`/story/${story.id}`);
-    } catch (err) {
-      console.error("Error fetching random story:", err);
-    } finally {
-      setLoadingRandom(false);
     }
   };
 
@@ -111,19 +78,34 @@ export default function Navbar({ currentStoryId }: NavbarProps) {
     router.push("/favorites");
   };
 
+  const goToRandomStory = async () => {
+    setLoadingRandom(true);
+    try {
+      const { data, error } = await supabase.rpc("get_random_story");
+      if (error) throw error;
+      const story = Array.isArray(data) ? data[0] : data;
+      if (story?.id) router.push(`/story/${story.id}`);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingRandom(false);
+    }
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full border border-purple-700 rounded">
       <div
-        className="w-full"
+        className="w-full bg-cover bg-center"
         style={{ backgroundImage: `url('/images/magic-book-bg.png')` }}
       >
-        <div className="max-w-7xl mx-auto px-6 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="text-2xl font-bold text-white">
               <Link href="/">Whispers of Yore</Link>
             </div>
 
-            <nav className="hidden md:flex items-center gap-6 lg:gap-8">
+            {/* Desktop / Tablet */}
+            <nav className="hidden md:flex items-center gap-4 lg:gap-6">
               <Link
                 href="/browse"
                 className="text-white font-medium hover:bg-white/20 transition duration-300 px-4 py-1 rounded-full hover:border border-white/20"
@@ -159,7 +141,9 @@ export default function Navbar({ currentStoryId }: NavbarProps) {
                   )}
 
                   <button
-                    onClick={logout}
+                    onClick={() =>
+                      supabase.auth.signOut().then(() => router.push("/login"))
+                    }
                     className="px-4 py-2 bg-red-500 text-white rounded-full font-semibold hover:bg-red-600 transition duration-300"
                   >
                     Logout
@@ -181,10 +165,11 @@ export default function Navbar({ currentStoryId }: NavbarProps) {
                 className="px-4 py-2 bg-white/10 text-white rounded-full font-semibold hover:bg-white/20 transition duration-300"
                 disabled={loadingRandom}
               >
-                {loadingRandom ? "Loading..." : "Random story"}
+                {loadingRandom ? "Loading..." : "Random Story"}
               </button>
             </nav>
 
+            {/* Mobile Menu */}
             <div className="md:hidden">
               <button
                 onClick={() => setIsOpen(!isOpen)}
@@ -199,11 +184,9 @@ export default function Navbar({ currentStoryId }: NavbarProps) {
             </div>
           </div>
 
+          {/* Mobile Navigation */}
           {isOpen && (
-            <nav
-              className="md:hidden flex flex-col gap-3 py-4 text-center"
-              style={{ backgroundImage: `url('/images/magic-book-bg.png')` }}
-            >
+            <nav className="md:hidden flex flex-col gap-3 py-4 text-center bg-black/70">
               <Link
                 href="/browse"
                 className="text-white font-medium"
@@ -238,7 +221,7 @@ export default function Navbar({ currentStoryId }: NavbarProps) {
 
                   <button
                     onClick={() => {
-                      logout();
+                      supabase.auth.signOut().then(() => router.push("/login"));
                       setIsOpen(false);
                     }}
                     className="text-white font-medium"
@@ -263,7 +246,7 @@ export default function Navbar({ currentStoryId }: NavbarProps) {
                 }}
                 className="px-4 py-2 bg-white/10 text-white rounded-full font-semibold hover:bg-white/20 transition duration-300 mx-auto"
               >
-                Random story
+                Random Story
               </button>
             </nav>
           )}

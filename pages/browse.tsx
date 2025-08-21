@@ -35,7 +35,6 @@ export default function BrowsePage() {
     fetchStories();
   }, []);
 
-  // Update filteredStories whenever filters or stories change
   useEffect(() => {
     let temp = stories;
 
@@ -54,16 +53,18 @@ export default function BrowsePage() {
   };
 
   return (
-    <div className="min-h-screen bg-purple-50 p-6">
-      <h1 className="text-3xl font-bold text-purple-900 mb-6">Browse Tales</h1>
+    <div className="min-h-screen bg-purple-50 p-4 sm:p-6 lg:p-8">
+      <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-purple-900 mb-6 text-center sm:text-left">
+        Browse Tales
+      </h1>
 
       {/* Filter Panel */}
-      <div className="flex gap-4 mb-6 flex-wrap">
+      <div className="flex flex-col sm:flex-row gap-4 mb-6 flex-wrap justify-center sm:justify-start">
         {/* Region Filter */}
         <select
           value={selectedRegion}
           onChange={(e) => setSelectedRegion(e.target.value)}
-          className="px-3 py-2 rounded border"
+          className="px-3 py-2 rounded border w-full sm:w-auto"
         >
           <option value="">All Regions</option>
           <option value="Africa">Africa</option>
@@ -76,7 +77,7 @@ export default function BrowsePage() {
         <select
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
-          className="px-3 py-2 rounded border"
+          className="px-3 py-2 rounded border w-full sm:w-auto"
         >
           <option value="">All Categories</option>
           <option value="myth">Myth</option>
@@ -90,7 +91,7 @@ export default function BrowsePage() {
             setSelectedRegion("");
             setSelectedCategory("");
           }}
-          className="px-3 py-2 bg-purple-700 text-white rounded hover:bg-purple-800 transition"
+          className="px-3 py-2 bg-purple-700 text-white rounded hover:bg-purple-800 transition w-full sm:w-auto"
         >
           Reset Filters
         </button>
@@ -98,7 +99,9 @@ export default function BrowsePage() {
 
       {/* Story List */}
       {loading ? (
-        <p className="text-gray-600">Loading stories...</p>
+        <p className="text-gray-600 text-center">Loading stories...</p>
+      ) : filteredStories.length === 0 ? (
+        <p className="text-gray-500 text-center mt-8">No stories found.</p>
       ) : (
         <StoryList
           stories={filteredStories}
