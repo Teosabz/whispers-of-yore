@@ -56,7 +56,8 @@ export default function StoryPage() {
 
   return (
     <div className="min-h-screen bg-purple-50">
-      <Navbar />
+      <Navbar currentStoryId={story.id} />
+
       <main className="max-w-4xl mx-auto p-6">
         <button
           onClick={() => router.push("/")}

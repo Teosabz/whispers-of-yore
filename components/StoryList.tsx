@@ -1,8 +1,9 @@
+// components/StoryList.tsx
 import StoryCard, { Story } from "./StoryCard";
 
 type StoryListProps = {
   stories: Story[];
-  favs: number[]; // IDs of favorited stories
+  favs: number[]; // IDs of favorited stories from Supabase
   toggleFav: (id: number) => void;
   getRegionName: (region?: string) => string;
   getCategoryName: (category?: string) => string;
@@ -15,7 +16,7 @@ export default function StoryList({
   getRegionName,
   getCategoryName,
 }: StoryListProps) {
-  if (stories.length === 0) {
+  if (!stories || stories.length === 0) {
     return <p className="text-center text-gray-500 mt-8">No stories found.</p>;
   }
 

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { supabase } from "@/lib/supabaseClient";
 
 export type Story = {
   id: number;
@@ -27,11 +28,21 @@ export default function StoryCard({
   getRegionName,
   getCategoryName,
 }: StoryCardProps) {
-  const totalFallbackImages = 448; // your total images
-  const fallbackIndex = (story.id % totalFallbackImages) + 1; // ensures 1–448
+  const totalFallbackImages = 448;
+  const fallbackIndex = (story.id % totalFallbackImages) + 1;
   const fallbackImage = `/images/fallback/pics (${fallbackIndex}).jpeg`;
-
   const imageSrc = story.cover_image || fallbackImage;
+
+  const handleFavClick = async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      alert("You must be logged in to favorite stories.");
+      return;
+    }
+    toggleFav(story.id);
+  };
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
@@ -69,7 +80,7 @@ export default function StoryCard({
 
         <div className="flex gap-2">
           <button
-            onClick={() => toggleFav(story.id)}
+            onClick={handleFavClick}
             className={`px-3 py-1 rounded ${
               fav ? "bg-red-500 text-white" : "bg-gray-200 text-gray-800"
             }`}

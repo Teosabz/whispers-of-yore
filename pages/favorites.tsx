@@ -1,11 +1,10 @@
-// components/Navbar.tsx
 "use client";
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { HiMenu, HiX } from "react-icons/hi";
 import { HiOutlineHeart, HiHeart } from "react-icons/hi2";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 
 interface NavbarProps {
@@ -23,20 +22,9 @@ export default function Navbar({ currentStoryId }: NavbarProps) {
   useEffect(() => {
     const getSession = async () => {
       const { data } = await supabase.auth.getSession();
-      setUserId(data.session?.user.id || null);
+      if (data.session) setUserId(data.session.user.id);
     };
     getSession();
-
-    // Listen for auth changes (login/logout)
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setUserId(session?.user.id || null);
-      }
-    );
-
-    return () => {
-      listener.subscription.unsubscribe();
-    };
   }, []);
 
   // Check if current story is favorited
@@ -50,7 +38,6 @@ export default function Navbar({ currentStoryId }: NavbarProps) {
         .eq("user_id", userId)
         .eq("story_id", currentStoryId)
         .single();
-
       setIsFavorited(!!data);
     };
 
@@ -59,7 +46,7 @@ export default function Navbar({ currentStoryId }: NavbarProps) {
 
   const toggleFavorite = async () => {
     if (!userId || !currentStoryId) {
-      alert("You must be logged in to favorite stories.");
+      router.push("/login");
       return;
     }
 
@@ -72,34 +59,14 @@ export default function Navbar({ currentStoryId }: NavbarProps) {
           .eq("story_id", currentStoryId);
         setIsFavorited(false);
       } else {
-        await supabase
-          .from("favorites")
-          .insert({ user_id: userId, story_id: currentStoryId });
+        await supabase.from("favorites").insert({
+          user_id: userId,
+          story_id: currentStoryId,
+        });
         setIsFavorited(true);
       }
     } catch (err) {
       console.error("Error toggling favorite:", err);
-    }
-  };
-
-  const logout = async () => {
-    await supabase.auth.signOut();
-    router.push("/login");
-  };
-
-  const goToRandomStory = async () => {
-    setLoadingRandom(true);
-    try {
-      const { data, error } = await supabase.rpc("get_random_story");
-      if (error) throw error;
-      if (!data) return;
-
-      const story = Array.isArray(data) ? data[0] : data;
-      if (story?.id) router.push(`/story/${story.id}`);
-    } catch (err) {
-      console.error("Error fetching random story:", err);
-    } finally {
-      setLoadingRandom(false);
     }
   };
 
@@ -109,6 +76,20 @@ export default function Navbar({ currentStoryId }: NavbarProps) {
       return;
     }
     router.push("/favorites");
+  };
+
+  const goToRandomStory = async () => {
+    setLoadingRandom(true);
+    try {
+      const { data, error } = await supabase.rpc("get_random_story");
+      if (error) throw error;
+      const story = Array.isArray(data) ? data[0] : data;
+      if (story?.id) router.push(`/story/${story.id}`);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingRandom(false);
+    }
   };
 
   return (
@@ -130,52 +111,27 @@ export default function Navbar({ currentStoryId }: NavbarProps) {
               >
                 Browse
               </Link>
-
-              {userId && (
-                <>
-                  <button
-                    onClick={goToFavorites}
-                    className="text-white font-medium hover:bg-white/20 transition duration-300 px-4 py-1 rounded-full hover:border border-white/20"
-                  >
-                    Favorites
-                  </button>
-
-                  {currentStoryId && (
-                    <button
-                      onClick={toggleFavorite}
-                      className="text-white font-medium px-2 py-1 rounded-full"
-                      title={
-                        isFavorited
-                          ? "Remove from favorites"
-                          : "Add to favorites"
-                      }
-                    >
-                      {isFavorited ? (
-                        <HiHeart className="h-6 w-6 text-red-500" />
-                      ) : (
-                        <HiOutlineHeart className="h-6 w-6" />
-                      )}
-                    </button>
-                  )}
-
-                  <button
-                    onClick={logout}
-                    className="px-4 py-2 bg-red-500 text-white rounded-full font-semibold hover:bg-red-600 transition duration-300"
-                  >
-                    Logout
-                  </button>
-                </>
-              )}
-
-              {!userId && (
-                <Link
-                  href="/login"
-                  className="px-4 py-2 bg-purple-700 text-white rounded-full font-semibold hover:bg-purple-800 transition duration-300"
+              <button
+                onClick={goToFavorites}
+                className="text-white font-medium hover:bg-white/20 transition duration-300 px-4 py-1 rounded-full hover:border border-white/20"
+              >
+                Favorites
+              </button>
+              {currentStoryId && (
+                <button
+                  onClick={toggleFavorite}
+                  className="text-white font-medium px-2 py-1 rounded-full"
+                  title={
+                    isFavorited ? "Remove from favorites" : "Add to favorites"
+                  }
                 >
-                  Login
-                </Link>
+                  {isFavorited ? (
+                    <HiHeart className="h-6 w-6 text-red-500" />
+                  ) : (
+                    <HiOutlineHeart className="h-6 w-6" />
+                  )}
+                </button>
               )}
-
               <button
                 onClick={goToRandomStory}
                 className="px-4 py-2 bg-white/10 text-white rounded-full font-semibold hover:bg-white/20 transition duration-300"
@@ -211,51 +167,26 @@ export default function Navbar({ currentStoryId }: NavbarProps) {
               >
                 Browse
               </Link>
-
-              {userId ? (
-                <>
-                  <button
-                    onClick={() => {
-                      goToFavorites();
-                      setIsOpen(false);
-                    }}
-                    className="text-white font-medium"
-                  >
-                    Favorites
-                  </button>
-
-                  {currentStoryId && (
-                    <button
-                      onClick={() => {
-                        toggleFavorite();
-                        setIsOpen(false);
-                      }}
-                      className="text-white font-medium"
-                    >
-                      {isFavorited ? "💖 Remove Favorite" : "🤍 Add Favorite"}
-                    </button>
-                  )}
-
-                  <button
-                    onClick={() => {
-                      logout();
-                      setIsOpen(false);
-                    }}
-                    className="text-white font-medium"
-                  >
-                    Logout
-                  </button>
-                </>
-              ) : (
-                <Link
-                  href="/login"
+              <button
+                onClick={() => {
+                  goToFavorites();
+                  setIsOpen(false);
+                }}
+                className="text-white font-medium"
+              >
+                Favorites
+              </button>
+              {currentStoryId && (
+                <button
+                  onClick={() => {
+                    toggleFavorite();
+                    setIsOpen(false);
+                  }}
                   className="text-white font-medium"
-                  onClick={() => setIsOpen(false)}
                 >
-                  Login
-                </Link>
+                  {isFavorited ? "💖 Remove Favorite" : "🤍 Add Favorite"}
+                </button>
               )}
-
               <button
                 onClick={() => {
                   goToRandomStory();
