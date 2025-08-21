@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { Story } from "@/components/StoryCard";
 import { getCategoryName } from "@/lib/categories";
 import { getRegionName } from "@/lib/regions";
+import Link from "next/link";
 
 export default function BrowsePage() {
   const [stories, setStories] = useState<Story[]>([]);
@@ -54,13 +55,22 @@ export default function BrowsePage() {
 
   return (
     <div className="min-h-screen bg-purple-50 p-4 sm:p-6 lg:p-8">
+      {/* Back Home Button */}
+      <div className="mb-6 text-center sm:text-left">
+        <Link
+          href="/"
+          className="inline-block px-4 py-2 mb-4 bg-purple-700 text-white rounded hover:bg-purple-800 transition"
+        >
+          ← Back Home
+        </Link>
+      </div>
+
       <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-purple-900 mb-6 text-center sm:text-left">
         Browse Tales
       </h1>
 
       {/* Filter Panel */}
       <div className="flex flex-col sm:flex-row gap-4 mb-6 flex-wrap justify-center sm:justify-start">
-        {/* Region Filter */}
         <select
           value={selectedRegion}
           onChange={(e) => setSelectedRegion(e.target.value)}
@@ -73,7 +83,6 @@ export default function BrowsePage() {
           <option value="Americas">Americas</option>
         </select>
 
-        {/* Category Filter */}
         <select
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
@@ -85,7 +94,6 @@ export default function BrowsePage() {
           <option value="legend">Legend</option>
         </select>
 
-        {/* Reset Filters */}
         <button
           onClick={() => {
             setSelectedRegion("");

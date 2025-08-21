@@ -1,9 +1,8 @@
-// pages/login.tsx
 "use client";
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { useRouter } from "next/navigation"; // use next/navigation for App Router
+import { useRouter } from "next/navigation"; // App Router
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -25,19 +24,14 @@ export default function LoginPage() {
           password,
         });
         if (error) throw error;
-
         router.push("/favorites");
       } else {
         const { error } = await supabase.auth.signUp({
           email,
           password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/login`,
-          },
+          options: { emailRedirectTo: `${window.location.origin}/login` },
         });
-
         if (error) throw error;
-
         setMessage(
           "Check your email to confirm your account before logging in."
         );
@@ -52,18 +46,20 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <form className="bg-white p-6 rounded shadow-md w-full max-w-sm">
-        <h1 className="text-2xl font-bold mb-4 text-center">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 sm:px-6 lg:px-8 py-8">
+      <form className="bg-white p-6 sm:p-8 rounded shadow-md w-full max-w-sm sm:max-w-md">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-4 text-center">
           {mode === "login" ? "Login" : "Sign Up"}
         </h1>
 
-        {message && <p className="text-red-500 text-sm mb-2">{message}</p>}
+        {message && (
+          <p className="text-red-500 text-sm mb-4 text-center">{message}</p>
+        )}
 
         <input
           type="email"
           placeholder="Email"
-          className="w-full p-2 border mb-2 rounded"
+          className="w-full p-3 border mb-3 rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -72,7 +68,7 @@ export default function LoginPage() {
         <input
           type="password"
           placeholder="Password"
-          className="w-full p-2 border mb-4 rounded"
+          className="w-full p-3 border mb-4 rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
@@ -80,7 +76,7 @@ export default function LoginPage() {
 
         <button
           onClick={handleSubmit}
-          className="w-full bg-purple-700 text-white p-2 rounded mb-2"
+          className="w-full bg-purple-700 text-white p-3 rounded mb-3 hover:bg-purple-800 transition"
           disabled={loading}
         >
           {loading ? "Please wait..." : mode === "login" ? "Login" : "Sign Up"}
@@ -92,7 +88,7 @@ export default function LoginPage() {
             setMode(mode === "login" ? "signup" : "login");
             setMessage(null);
           }}
-          className="w-full bg-gray-200 text-gray-800 p-2 rounded mb-2"
+          className="w-full bg-gray-200 text-gray-800 p-3 rounded mb-3 hover:bg-gray-300 transition"
         >
           {mode === "login" ? "Create a new account" : "Back to login"}
         </button>
@@ -101,9 +97,9 @@ export default function LoginPage() {
         <button
           type="button"
           onClick={() => router.push("/")}
-          className="w-full bg-gray-300 text-gray-900 p-2 rounded mt-2"
+          className="w-full bg-gray-300 text-gray-900 p-3 rounded hover:bg-gray-400 transition"
         >
-          Back Home
+          ← Back Home
         </button>
       </form>
     </div>

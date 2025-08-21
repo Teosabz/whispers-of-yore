@@ -64,89 +64,91 @@ export default function SubmitPage() {
   };
 
   return (
-    <div className="min-h-screen bg-purple-50 p-6">
+    <div className="min-h-screen bg-purple-50 px-4 sm:px-6 lg:px-8 py-8">
       {/* Back to Home Button */}
-      <button
-        onClick={() => router.push("/")}
-        className="mb-6 px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 transition"
-      >
-        ← Back to Home
-      </button>
+      <div className="max-w-3xl mx-auto mb-6">
+        <button
+          onClick={() => router.push("/")}
+          className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 transition w-full sm:w-auto"
+        >
+          ← Back to Home
+        </button>
+      </div>
 
-      <h1 className="text-3xl font-bold text-purple-900 mb-6">
+      <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-purple-900 mb-6 text-center sm:text-left">
         Submit a Story
       </h1>
+
       <form
         onSubmit={handleSubmit}
-        className="max-w-3xl mx-auto bg-white p-6 rounded shadow-md"
+        className="max-w-3xl mx-auto bg-white p-6 sm:p-8 rounded shadow-md flex flex-col gap-4"
       >
-        {/* Form fields */}
-        <label className="block mb-4">
+        <label className="flex flex-col">
           Title
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
-            className="w-full mt-1 p-2 border rounded"
+            className="mt-1 p-3 border rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
         </label>
 
-        <label className="block mb-4">
+        <label className="flex flex-col">
           Text
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
             required
-            className="w-full mt-1 p-2 border rounded"
+            className="mt-1 p-3 border rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
             rows={6}
           />
         </label>
 
-        <label className="block mb-4">
+        <label className="flex flex-col">
           Region / Country
           <input
             type="text"
             value={region}
             onChange={(e) => setRegion(e.target.value)}
-            className="w-full mt-1 p-2 border rounded"
+            className="mt-1 p-3 border rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
         </label>
 
-        <label className="block mb-4">
+        <label className="flex flex-col">
           Category (myth, folktale, legend)
           <input
             type="text"
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="w-full mt-1 p-2 border rounded"
+            className="mt-1 p-3 border rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
         </label>
 
-        <label className="block mb-4">
+        <label className="flex flex-col">
           Author
           <input
             type="text"
             value={author}
             onChange={(e) => setAuthor(e.target.value)}
-            className="w-full mt-1 p-2 border rounded"
+            className="mt-1 p-3 border rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
         </label>
 
-        <label className="block mb-4">
+        <label className="flex flex-col">
           Cover Image
           <input
             type="file"
             accept="image/*"
             onChange={handleFileChange}
-            className="w-full mt-1"
+            className="mt-1"
           />
         </label>
 
         <button
           type="submit"
           disabled={loading}
-          className="px-4 py-2 bg-purple-700 text-white rounded hover:bg-purple-800 transition"
+          className="px-4 py-3 bg-purple-700 text-white rounded hover:bg-purple-800 transition"
         >
           {loading ? "Submitting..." : "Submit Story"}
         </button>
